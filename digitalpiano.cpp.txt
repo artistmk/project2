@@ -1,0 +1,46 @@
+#include <windows.h>
+#include <iostream>
+#include <map>
+
+// Define the frequency of the piano notes
+std::map<char, int> noteFrequencies = {
+    {'A', 440},  // A4
+    {'S', 494},  // B4
+    {'D', 523},  // C5
+    {'F', 587},  // D5
+    {'G', 659},  // E5
+    {'H', 698},  // F5
+    {'J', 784}   // G5
+};
+
+// Duration of the note in milliseconds
+const int duration = 500;
+
+// Function to handle key press events and play the corresponding note
+void handleKeyPress(char key) {
+    auto it = noteFrequencies.find(key);
+    if (it != noteFrequencies.end()) {
+        Beep(it->second, duration);
+    }
+}
+
+int main() {
+    std::cout << "Press A, S, D, F, G, H, J keys to play notes. Press Q to quit." << std::endl;
+
+    while (true) {
+        if (GetAsyncKeyState('Q') & 0x8000) {
+            break;  // Exit the loop if Q is pressed
+        }
+
+        for (const auto& note : noteFrequencies) {
+            if (GetAsyncKeyState(note.first) & 0x8000) {
+                handleKeyPress(note.first);
+                Sleep(duration);  // Prevent rapid repeated key press detection
+            }
+        }
+
+        Sleep(100);  // Slight delay to avoid high CPU usage
+    }
+
+    return 0;
+}
